@@ -1,12 +1,12 @@
 name := "scala-uri"
 
-organization  := "com.github.theon"
+organization  := "com.netaporter"
 
-version       := "0.3.7-SNAPSHOT"
+version       := "0.4.1-SNAPSHOT"
 
-scalaVersion  := "2.10.0"
+scalaVersion  := "2.10.3"
 
-crossScalaVersions := Seq("2.9.2", "2.10.0")
+crossScalaVersions := Seq("2.10.3")
 
 publishMavenStyle := true
 
@@ -14,15 +14,13 @@ publishArtifact in Test := false
 
 pomIncludeRepository := { _ => false }
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature")
 
-libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.1.4"
+libraryDependencies += "org.parboiled" %% "parboiled" % "2.0-M1"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.0.M5b" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
 
-seq(ScctPlugin.instrumentSettings : _*)
-
-seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
+seq(CoverallsPlugin.singleProject: _*)
 
 parallelExecution in Test := false
 
@@ -35,7 +33,7 @@ publishTo <<= version { (v: String) =>
 }
 
 pomExtra := (
-  <url>https://github.com/theon/scala-uri</url>
+  <url>https://github.com/net-a-porter/scala-uri</url>
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -44,13 +42,13 @@ pomExtra := (
     </license>
   </licenses>
   <scm>
-    <url>git@github.com:theon/scala-uri.git</url>
-    <connection>scm:git@github.com:theon/scala-uri.git</connection>
+    <url>git@github.com:net-a-porter/scala-uri.git</url>
+    <connection>scm:git@github.com:net-a-porter/scala-uri.git</connection>
   </scm>
   <developers>
     <developer>
       <id>theon</id>
       <name>Ian Forsey</name>
-      <url>http://theon.github.com</url>
+      <url>http://theon.github.io</url>
     </developer>
   </developers>)

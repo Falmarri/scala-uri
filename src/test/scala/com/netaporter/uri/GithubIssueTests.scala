@@ -1,14 +1,18 @@
-package com.github.theon.uri
+package com.netaporter.uri
 
-import org.scalatest.{OptionValues, FlatSpec}
-import org.scalatest.matchers.ShouldMatchers
-import com.github.theon.uri.Uri._
-import org.scalatest.PartialFunctionValues._
+import org.scalatest.{Matchers, OptionValues, FlatSpec}
+import scala.Some
+import Uri._
+import com.netaporter.uri.decoding.PermissivePercentDecoder
+import com.netaporter.uri.config.UriConfig
+import com.netaporter.uri
 
 /**
  * Test Suite to ensure that bugs raised by awesome github peeps NEVER come back
  */
-class GithubIssueTests extends FlatSpec with ShouldMatchers with OptionValues {
+class GithubIssueTests extends FlatSpec with Matchers with OptionValues {
+
+  import uri.dsl._
 
   "Github Issue #2" should "now be fixed. Pluses in querystrings should be encoded" in {
     val uri = "http://theon.github.com/+" ? ("+" -> "+")
@@ -36,37 +40,38 @@ class GithubIssueTests extends FlatSpec with ShouldMatchers with OptionValues {
     uri.toString() should equal ("/blah?blah=blah")
   }
 
-  "Github Issue #8" should "now be fixed. Parsed relative uris should have no protocol" in {
-    val uri = parseUri("abc")
+  "Github Issue #8" should "now be fixed. Parsed relative uris should have no scheme" in {
+    val uri = parse("abc")
 
-    uri.protocol should equal (None)
+    uri.scheme should equal (None)
     uri.host should equal (None)
     uri.path should equal ("/abc")
   }
 
   "Github Issue #15" should "now be fixed. Empty Query String values are parsed" in {
-    val uri = parseUri("http://localhost:8080/ping?oi=TscV16GUGtlU&ppc=&bpc=")
+    val uri = parse("http://localhost:8080/ping?oi=TscV16GUGtlU&ppc=&bpc=")
 
-    uri.protocol.value should equal ("http")
+    uri.scheme.value should equal ("http")
     uri.host.value should equal ("localhost")
     uri.port.value should equal (8080)
     uri.path should equal ("/ping")
-    uri.query.params("oi") should equal (List("TscV16GUGtlU"))
-    uri.query.params("ppc") should equal (List(""))
-    uri.query.params("bpc") should equal (List(""))
+    uri.query.params("oi") should equal (Vector("TscV16GUGtlU"))
+    uri.query.params("ppc") should equal (Vector(""))
+    uri.query.params("bpc") should equal (Vector(""))
   }
 
   "Github Issue #12" should "now be fixed. Parsing URIs parse percent escapes" in {
-    val source = Uri(
+    val source = new Uri(
       Some("http"),
       None,
       None,
       Some("xn--ls8h.example.net"),
       None,
-      List("", "path with spaces"),
-      com.github.theon.uri.Querystring(Map("a b" → List("c d")))
+      List(PathPart(""), PathPart("path with spaces")),
+      QueryString(Vector("a b" -> "c d")),
+      None
     )
-    val parsed = parseUri(source.toString)
+    val parsed = parse(source.toString)
     parsed should equal(source)
   }
 
@@ -77,7 +82,13 @@ class GithubIssueTests extends FlatSpec with ShouldMatchers with OptionValues {
 
   "Github Issue #26" should "now be fixed" in {
     val uri = "http://lesswrong.com/index.php?query=abc%yum&john=hello"
-    val u = parseUri(uri)(PermissiveDecoder)
-    u.query.params("query").head should equal("abc%yum")
+    val conf = UriConfig(decoder = PermissivePercentDecoder)
+    val u = parse(uri)(conf)
+    u.query.param("query").value should equal("abc%yum")
+  }
+
+  "Github Issue #37" should "now be fixed" in {
+    val uri = "http://test.com:8080" / "something"
+    uri.toString should equal("http://test.com:8080/something")
   }
 }

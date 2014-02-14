@@ -1,10 +1,10 @@
-package com.github.theon.uri
+package com.netaporter.uri
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import com.github.theon.uri.Uri._
+import org.scalatest.{Matchers, FlatSpec}
 
-class TypeTests extends FlatSpec with ShouldMatchers {
+class TypeTests extends FlatSpec with Matchers {
+
+  import dsl._
 
   "String" should "render correctly" in {
     val uri = "/uris-in-scala.html" ? ("param" -> "hey")
